@@ -8,6 +8,8 @@ public class ServerThread extends Thread {
 	private Server server;
 	// The Socket connected to our client
 	private Socket socket;
+	private String username=null;
+	private int x, y;
 
 	// Constructor.
 	public ServerThread(Server server, Socket socket) {
@@ -21,6 +23,7 @@ public class ServerThread extends Thread {
 	// This runs in a separate thread when start() is called in the
 	// constructor.
 	public void run() {
+		 
 		try {
 			// Create a DataInputStream for communication; the client
 			// is using a DataOutputStream to write to us
@@ -31,7 +34,13 @@ public class ServerThread extends Thread {
 				//String message = din.toString();
 				Player player = (Player) din.readObject();
 				// ... tell the world ...
-				System.out.println("Object received = " + player.toString());
+				System.out.println("Object received = " + player.toString()+" "+player.isSignedIn());
+				if(username==null)
+				{
+					username=player.getUserName();
+				}
+				x=player.getX();
+				y=player.getY();
 				// ... and have the server send it to all clients
 				server.sendToAll(player);
 			}
@@ -46,7 +55,7 @@ public class ServerThread extends Thread {
 		} finally {
 			// The connection is closed for one reason or another,
 			// so have the server dealing with it
-			server.removeConnection(socket);
+			server.removeConnection(socket,username,x,y);
 		}
 	}
 }

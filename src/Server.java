@@ -68,7 +68,7 @@ public class Server {
 	// Remove a socket, and it's corresponding output stream, from our
 	// list. This is usually called by a connection thread that has
 	// discovered that the connectin to the client is dead.
-	void removeConnection(Socket s) {
+	void removeConnection(Socket s,String username,int x, int y) {
 		// Synchronize so we don't mess up sendToAll() while it walks
 		// down the list of all output streamsa
 		synchronized (outputStreams) {
@@ -76,6 +76,12 @@ public class Server {
 			System.out.println("Removing connection to " + s);
 			// Remove it from our hashtable/list
 			outputStreams.remove(s);
+			if(username!=null)
+			{
+				Player signoutPlayer= new Player(x,y,username);
+				signoutPlayer.signOut();
+				sendToAll(signoutPlayer);
+			}
 			// Make sure it's closed
 			try {
 				s.close();
