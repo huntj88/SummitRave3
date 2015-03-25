@@ -13,6 +13,7 @@ public class Player implements Serializable{
 	private int y;
 	private String userName;
 	private boolean signedIn=true;
+	private int health=100;
 	
 	public Player(int x, int y, String userName)
 	{

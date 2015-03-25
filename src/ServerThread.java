@@ -34,7 +34,7 @@ public class ServerThread extends Thread {
 				//String message = din.toString();
 				Player player = (Player) din.readObject();
 				// ... tell the world ...
-				System.out.println("Object received = " + player.toString()+" "+player.isSignedIn());
+				//System.out.println("Object received = " + player.toString()+" "+player.isSignedIn());
 				if(username==null)
 				{
 					username=player.getUserName();
