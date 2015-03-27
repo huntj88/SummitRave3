@@ -1,3 +1,7 @@
+/src/
 /Player.class
 /Server.class
 /ServerThread.class
+/Connection.class
+/PlannedServer.class
+/SendThread.class
