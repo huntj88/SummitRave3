@@ -36,6 +36,8 @@ public class PlannedServer {
 	    		connections.add(new Connection(packet.getAddress(), packet.getPort(),data[1]));
 	    		
 	    		System.out.println(data[1] + " has Logged in");
+	    		
+	    		sendToAll(connections, packet);
 	    	}
 	    	else if(data[0].equals("Logout"))
 	    	{
@@ -52,24 +54,27 @@ public class PlannedServer {
 	    			}
 	    		}
 	    		
+	    		sendToAll(connections, packet);
 	    	}
 	    	else if(data[0].equals("Move"))
 	    	{
 	    		System.out.println("data[0] is packet");
+	    		sendToAll(connections, packet);
 	    	}
 	    	else
 	    	{
-	    		System.out.println("From Client: "+new String(packet.getData(), 0, packet.getLength()));
-	    		
-	    		//send to everyone else in the connections array
-	    		for(Connection test : connections)
-	    		{
-	    			new SendThread(test, new String(packet.getData(), 0, packet.getLength())).start();
-	    		}
-	    		
-	    	
+	    		sendToAll(connections, packet);
 	    	}
 	    }
 	}
+	
+	public static void sendToAll(ArrayList<Connection> connections,DatagramPacket packet)
+	{
+		for(Connection test : connections)
+		{
+			new SendThread(test, new String(packet.getData(), 0, packet.getLength())).start();
+		}
+	}
+	
 	
 }
