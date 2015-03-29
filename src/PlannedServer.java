@@ -1,80 +1,30 @@
 
+import javax.swing.JFrame;
 
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.util.ArrayList;
-import java.util.Iterator;
 
-public class PlannedServer {
+public class PlannedServer{
 
-	
-	public static void main(String[] args) throws Exception {
-	    int PORT = 4000;
-	    byte[] buf = new byte[1000];
-	    DatagramPacket packet = new DatagramPacket(buf, buf.length);
-	    DatagramSocket socket = new DatagramSocket(PORT);
-	    ArrayList<Connection> connections = new ArrayList<Connection>();
-	    //System.out.println("Server started");
-	    
-	    while(true)
-	    {
-	    	socket.setSoTimeout(280000000);
-	    	socket.receive(packet);
-	    	//System.out.println(connections.size());
-	    	
-	    	String[] data = new String(packet.getData(), 0, packet.getLength()).split(" ");
-	    	
-	    	if(data[0].equals("Login"))
-	    	{
-	    		boolean add=true;
-	    		for(Connection test : connections)
-	    		{
-	    			if(test.getIP()==packet.getAddress())
-	    			add=false;
-	    		}
-	    		if(add)
-	    		connections.add(new Connection(packet.getAddress(), packet.getPort(),data[1]));
-	    		
-	    		System.out.println(data[1] + " has Logged in");
-	    		
-	    		sendToAll(connections, packet);
-	    	}
-	    	else if(data[0].equals("Logout"))
-	    	{
-	    		Iterator<Connection> i = connections.iterator();
-	    		while (i.hasNext())
-	    		{
-	    			
-	    			if(i.next().getUsername().equals(data[1]))
-	    			{
-	    				System.out.println(connections.size());
-	    				i.remove();
-	    				System.out.println(data[1] + " has Logged out");
-	    				System.out.println(connections.size());
-	    			}
-	    		}
-	    		
-	    		sendToAll(connections, packet);
-	    	}
-	    	else if(data[0].equals("Move"))
-	    	{
-	    		System.out.println("data[0] is packet");
-	    		sendToAll(connections, packet);
-	    	}
-	    	else
-	    	{
-	    		sendToAll(connections, packet);
-	    	}
-	    }
-	}
-	
-	public static void sendToAll(ArrayList<Connection> connections,DatagramPacket packet)
-	{
-		for(Connection test : connections)
-		{
-			new SendThread(test, new String(packet.getData(), 0, packet.getLength())).start();
-		}
-	}
-	
+	private static void createAndShowGUI() {
+        //Create and set up the window.
+        JFrame frame = new JFrame("TextDemo");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        //Add contents to the window.
+        frame.add(new Server());
+ 
+        //Display the window.
+        frame.pack();
+        frame.setSize(400, 400);
+        frame.setVisible(true);
+    }
+ 
+    public static void main(String[] args) {
+        //Schedule a job for the event dispatch thread:
+        //creating and showing this application's GUI.
+        javax.swing.SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                createAndShowGUI();
+            }
+        });
+    }
 	
 }
