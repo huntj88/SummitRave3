@@ -109,13 +109,17 @@ public class Server extends JPanel implements Runnable, ActionListener{
 	    			{
 	    				i.remove();
 	    				addToLog(data[1] + " has Logged out");
+	    				break;
 	    			}
 	    		}
 	    		
 	    		sendToAll(connections, packet);
 	    	}
-	    	else if(data[0].equals("Move"))
+	    	else if(data[0].equals("Health")) //test to make sure correct values. just change the text
 	    	{
+	    		addToLog(data[0]);
+	    		addToLog(data[1]);
+	    		addToLog(data[2]);
 	    		sendToAll(connections, packet);
 	    	}
 	    	else
