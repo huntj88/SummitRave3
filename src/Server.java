@@ -20,6 +20,12 @@ public class Server extends JPanel implements Runnable, ActionListener{
     protected JTextArea textArea;
     private final static String newline = "\n";
     
+    int PORT = 4000;
+	byte[] buf = new byte[1000];
+	DatagramPacket packet = new DatagramPacket(buf, buf.length);
+	DatagramSocket socket = null; 
+	ArrayList<Connection> connections = new ArrayList<Connection>();
+	
 	public Server()
 	{	
 		super(new GridBagLayout());
@@ -51,11 +57,7 @@ public class Server extends JPanel implements Runnable, ActionListener{
 	@Override
 	public void run() {
 		// TODO Auto-generated method stub
-		int PORT = 4000;
-	    byte[] buf = new byte[1000];
-	    DatagramPacket packet = new DatagramPacket(buf, buf.length);
-	    DatagramSocket socket = null; 
-	    ArrayList<Connection> connections = new ArrayList<Connection>();
+		
 		
 	    try {
 			socket = new DatagramSocket(PORT);
@@ -97,7 +99,7 @@ public class Server extends JPanel implements Runnable, ActionListener{
 	    		connections.add(new Connection(packet.getAddress(), packet.getPort(),data[1]));
 	    		addToLog(data[1] + " has Logged in");
 	    		
-	    		sendToAll(connections, packet);
+	    		sendToAll();
 	    	}
 	    	else if(data[0].equals("Logout"))
 	    	{
@@ -113,24 +115,24 @@ public class Server extends JPanel implements Runnable, ActionListener{
 	    			}
 	    		}
 	    		
-	    		sendToAll(connections, packet);
+	    		sendToAll();
 	    	}
 	    	else if(data[0].equals("Health")) //test to make sure correct values. just change the text
 	    	{
-	    		addToLog(data[0]);
+	    		/*addToLog(data[0]);
 	    		addToLog(data[1]);
-	    		addToLog(data[2]);
-	    		sendToAll(connections, packet);
+	    		addToLog(data[2]);*/
+	    		sendToAll();
 	    	}
 	    	else
 	    	{
-	    		addToLog(data[0]);
-	    		sendToAll(connections, packet);
+	    		//addToLog(data[0]);
+	    		sendToAll();
 	    	}
 	    }
 	}
 	
-	public void sendToAll(ArrayList<Connection> connections,DatagramPacket packet)
+	public void sendToAll()
 	{
 		for(Connection test : connections)
 		{
@@ -144,11 +146,36 @@ public class Server extends JPanel implements Runnable, ActionListener{
         textArea.setCaretPosition(textArea.getDocument().getLength());
 	}
 	
+	public void sendToAll(String message)
+	{
+		boolean send=false;
+		for(Connection test : connections)
+		{
+			if(message.contains(test.getUsername()))
+			{
+				send=true;
+				break;
+			}
+			
+		}
+		
+		byte[] buffer = new byte[1000];
+		buffer = message.getBytes();
+		DatagramPacket out = new DatagramPacket(buffer, buffer.length);
+		
+		if(send)
+		for(Connection test : connections)
+		{
+			new SendThread(test, new String(out.getData(), 0, out.getLength())).start();
+		}
+	}
+	
 
 	@Override
 	public void actionPerformed(ActionEvent arg0) {
 		
-		String text = textField.getText();
+		String text = textField.getText()+ " Server";
+		sendToAll(text);
         textArea.append(text + newline);
         textField.selectAll();
  
